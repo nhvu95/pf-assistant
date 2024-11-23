@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Popup</title>
+        <script src="popup.js"></script>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f9;
+                margin: 0;
+                padding: 20px;
+                text-align: center;
+                width: 400px; /* Increase the width */
+            }
+
+            h1 {
+                color: #333;
+            }
+
+            p {
+                color: #666;
+            }
+
+            #loginForm {
+                margin-top: 20px;
+            }
+
+            input[type='text'],
+            input[type='password'] {
+                width: 80%;
+                padding: 10px;
+                margin: 10px 0;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+
+            .button-85 {
+                background-color: #4caf50;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 16px;
+            }
+
+            .button-85:hover {
+                background-color: #45a049;
+            }
+
+            .hidden {
+                display: none !important;
+            }
+
+            .success-icon {
+                color: green;
+                font-size: 24px;
+            }
+
+            /* Add these styles in the <style> section of popup.html */
+            #spinner {
+                display: inline-block;
+                width: 20px;
+                height: 20px;
+                border: 3px solid rgba(0, 0, 0, 0.1);
+                border-radius: 50%;
+                border-top-color: #4caf50;
+                animation: spin 1s ease-in-out infinite;
+                margin-right: 10px;
+                vertical-align: middle;
+            }
+
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            #successMessage {
+                margin-top: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>PF Assistant</h1>
+        <p>AI-based assistant for TikTok shop from <a href="https://privatefulfillment.com/">Private Fulfillment</a>.</p>
+        <div id="loginForm">
+            <input type="text" id="username" placeholder="Username" required />
+            <input type="password" id="password" placeholder="Password" required />
+            <div style="display: flex; align-items: center; justify-content: center">
+                <div id="spinner" class="hidden"></div>
+                <button id="loginButton" class="button-85">Login</button>
+            </div>
+        </div>
+        <div id="successMessage" class="hidden">
+            <span class="success-icon">&#10004;</span>
+            <p>You are already logged in. Reload your page and enjoy our extension!</p>
+        </div>
+    </body>
+</html>
