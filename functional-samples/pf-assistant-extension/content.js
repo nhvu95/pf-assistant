@@ -290,19 +290,19 @@ function initializeLayout() {
     }
 }
 
-// Handle the case where the page is already loade
-window.addEventListener('DOMContentLoaded', () => {
-    chrome.storage.local.get(['token'], result => {
-        if (result.token) initializeLayout();
-    });
-});
+chrome.storage.local.get(['token'], result => {
+    if (result.token) {
+        // Handle the case where the page is already loaded
+        window.addEventListener('DOMContentLoaded', () => initializeLayout);
 
-// Handle the case where the page is changed
-const observer = new MutationObserver(mutations => {
-    mutations.forEach(mutation => {
-        if ((mutation.type === 'childList' || mutation.type === 'subtree') && mutation.addedNodes.length > 0) {
-            initializeLayout();
-        }
-    });
+        // Handle the case where the page is changed
+        const observer = new MutationObserver(mutations => {
+            mutations.forEach(mutation => {
+                if ((mutation.type === 'childList' || mutation.type === 'subtree') && mutation.addedNodes.length > 0) {
+                    initializeLayout();
+                }
+            });
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
 });
-observer.observe(document.body, { childList: true, subtree: true });
