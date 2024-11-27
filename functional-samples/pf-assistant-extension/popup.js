@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
     const successMessage = document.getElementById('successMessage');
     const loginButton = document.getElementById('loginButton');
+    const optionsButton = document.getElementById('optionsButton');
+    const extraButton = document.getElementById('extraButton');
 
     // Check if token exists in chrome.storage
     chrome.storage.local.get(['token'], result => {
@@ -15,7 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
             successMessage.classList.add('hidden');
         }
     });
-
     loginButton.addEventListener('click', () => {
         const spinner = document.getElementById('spinner');
         spinner.classList.remove('hidden'); // Show spinner
@@ -55,5 +56,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('Error:', error);
                 alert('An error occurred. Please try again.');
             });
+    });
+
+    optionsButton.addEventListener('click', () => {
+        chrome.tabs.create({ url: 'settings.html' });
+    });
+    extraButton.addEventListener('click', () => {
+        chrome.tabs.create({ url: 'extra.html' });
     });
 });

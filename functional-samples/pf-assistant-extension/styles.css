@@ -16,11 +16,13 @@
     user-select: none;
     -webkit-user-select: none;
     touch-action: manipulation;
-    width: 120px;
+    min-width: 120px;
 }
 
 .button-wrapper {
     padding: 4px 0;
+    position: absolute;
+    right: 50px;
 }
 
 .button-wrapper select {
@@ -93,6 +95,8 @@
     display: flex;
     justify-content: flex-end;
     align-items: center;
+    position: absolute;
+    right: 50px;
 }
 
 #aiSpinner {

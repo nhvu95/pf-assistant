@@ -1,9 +1,10 @@
 {
     "manifest_version": 3,
     "name": "PF-Assistant Extension",
-    "version": "1.0",
+    "version": "1.2",
     "description": "AI-based extension to create a SEO tittle, description and attribute for your Tiktok Shop product",
-    "permissions": ["activeTab", "storage", "scripting"],
+    "permissions": ["activeTab", "storage", "scripting", "debugger"],
+    "options_page": "settings.html",
     "background": {
         "service_worker": "background.js"
     },
@@ -27,6 +28,12 @@
             "matches": ["<all_urls>"],
             "js": ["content.js"],
             "css": ["styles.css"]
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": ["extra.html"],
+            "matches": ["<all_urls>"]
         }
     ]
 }

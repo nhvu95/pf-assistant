@@ -1,5 +1,35 @@
-function assistantForDescription(descriptionLabel) {
-    const descriptionText = `<p><br></p>
+let ATTRIBUTES = {};
+
+let HTML_CODES = [];
+
+let DEFAULT_ATTRIBUTE = `{
+    "tshirt": {
+        "Fit": ["Slim-Fitting"],
+        "Pattern": ["Graphic"],
+        "Sleeve Type": ["Regular"],
+        "Size Type": ["Regular"],
+        "Style": ["Basic","Casual"],
+        "Neckline": ["Crew Neck"]
+    },
+    "sweatshirt": {
+        "Fit": ["Slim-Fitting"],
+        "Pattern": ["Graphic"],
+        "Size Type": ["Regular"],
+        "Style": ["Basic","Casual"],
+        "Neckline": ["Crew Neck"]
+    },
+    "hoodie": {
+        "Fit": ["Slim-Fitting"],
+        "Pattern": ["Graphic"],
+        "Size Type": ["Regular"],
+        "Style": ["Basic","Casual"],
+        "Neckline": ["Crew Neck"]
+    }
+}`;
+
+let SIZE_CHART_NAMES = [];
+
+let DEFAULT_HTMLCODES = `<p><br></p>
 <p data-pm-slice="1 1 []"><strong>Description</strong></p>
 <p><br></p>
 <p>Welcome to my Shop!</p>
@@ -39,37 +69,33 @@ function assistantForDescription(descriptionLabel) {
 <p>&bull; Business address: Texas, United States</p>
 <p><br></p>`;
 
-    const grandParent = descriptionLabel.parentElement.parentElement;
-    const editor = grandParent.querySelector('div[contenteditable="true"]');
-    if (editor) {
-        editor.textContent = descriptionText;
-    }
+function createPFAssistantButton(label, callback) {
+    const button = document.createElement('button');
+    const divWrapper = document.createElement('div');
+    const spinner = document.createElement('div');
+
+    divWrapper.className = 'button-assistant-wrapper';
+    spinner.id = 'aiSpinner';
+    spinner.classList.add('hidden');
+    button.className = 'button-85';
+    button.textContent = 'PF Assistant';
+    button.addEventListener('click', () => {
+        callback();
+    });
+    divWrapper.appendChild(spinner);
+    divWrapper.appendChild(button);
+    label.insertAdjacentElement('afterend', divWrapper);
 }
 
-const ATTRIBUTES = {
-    tshirt: {
-        Fit: ['Slim-Fitting'],
-        Pattern: ['Graphic'],
-        'Sleeve Type': ['Regular'],
-        'Size Type': ['Regular'],
-        Style: ['Basic', 'Casual'],
-        Neckline: ['Crew Neck']
-    },
-    sweatshirt: {
-        Fit: ['Slim-Fitting'],
-        Pattern: ['Graphic'],
-        'Size Type': ['Regular'],
-        Style: ['Basic', 'Casual'],
-        Neckline: ['Crew Neck']
-    },
-    hoodie: {
-        Fit: ['Slim-Fitting'],
-        Pattern: ['Graphic'],
-        'Size Type': ['Regular'],
-        Style: ['Basic', 'Casual'],
-        Neckline: ['Crew Neck']
+function assistantForDescription(descriptionLabel, type) {
+    const descriptionText = HTML_CODES.find(i => i.name === type).code;
+
+    const grandParent = descriptionLabel.parentElement.parentElement.parentElement;
+    const editor = grandParent.querySelector('div[contenteditable="true"]');
+    if (editor) {
+        editor.innerHTML = descriptionText;
     }
-};
+}
 
 /**
  * Assistant for the attributes
@@ -77,7 +103,7 @@ const ATTRIBUTES = {
  * @param type 'tshirt' | 'sweatshirt' | 'hoodie'
  */
 function assistantForAttributes(attributeLabel, type) {
-    const grandParent = attributeLabel.parentElement.parentElement;
+    const grandParent = attributeLabel.parentElement.parentElement.parentElement;
     const questions = grandParent.querySelectorAll('.grid label.font-semibold');
     questions.forEach((questionLabel, index) => {
         setTimeout(() => handleQuestion(questionLabel, type), index * 200);
@@ -124,7 +150,7 @@ function selectSuggestions(suggestions, input) {
 }
 
 function assistantForProductName(productNameLabel, button, spinner) {
-    const grandParent = productNameLabel.parentElement.parentElement;
+    const grandParent = productNameLabel.parentElement.parentElement.parentElement;
     const spans = grandParent.querySelectorAll('span');
     const recommendationLabel = Array.from(spans).find(span => span.textContent === 'Recommendations');
     const suggestions = [];
@@ -228,13 +254,30 @@ function createAttributeDropdowns(attributeLabel) {
  * @param descriptionLabel HTMLElement
  */
 function createDescriptionButton(descriptionLabel) {
-    const button = document.createElement('button');
-    button.className = 'button-85';
-    button.textContent = 'PF Assistant';
-    button.addEventListener('click', () => {
-        assistantForDescription(descriptionLabel);
+    const dropdown = document.createElement('select');
+    dropdown.placeholder = 'Html Template';
+
+    const defaultOption = document.createElement('option');
+    defaultOption.text = 'None';
+    defaultOption.value = '';
+    dropdown.add(defaultOption);
+
+    HTML_CODES.map(i => i.name).forEach(name => {
+        const tshirtOption = document.createElement('option');
+        tshirtOption.text = name;
+        tshirtOption.value = name;
+        dropdown.add(tshirtOption);
     });
-    descriptionLabel.insertAdjacentElement('afterend', button);
+
+    dropdown.addEventListener('change', () => {
+        if (dropdown.value.length > 0) {
+            assistantForDescription(descriptionLabel, dropdown.value);
+        }
+    });
+    const wrapper = document.createElement('div');
+    wrapper.className = 'button-85 button-wrapper';
+    wrapper.appendChild(dropdown);
+    descriptionLabel.insertAdjacentElement('afterend', wrapper);
 }
 
 /**
@@ -259,6 +302,117 @@ function createProductNameButton(productNameLabel) {
     productNameLabel.insertAdjacentElement('afterend', divWrapper);
 }
 
+function ClickEvent() {
+    return new MouseEvent('click', {
+        view: window,
+        bubbles: true,
+        cancelable: true,
+        clientX: 0
+        /* whatever properties you want to give it */
+    });
+}
+
+function MouseOverEvent() {
+    return new MouseEvent('mouseover', {
+        view: window,
+        bubbles: true,
+        cancelable: true,
+        clientX: 0
+        /* whatever properties you want to give it */
+    });
+}
+
+function MouseOutEvent() {
+    return new MouseEvent('mouseout', {
+        view: window,
+        bubbles: true,
+        cancelable: true,
+        clientX: 0
+        /* whatever properties you want to give it */
+    });
+}
+
+/**
+ * Assistant for the Size Chart
+ * @param sizeChartLabel HTMLElement
+ * @param imageName string
+ */
+function assistantForSizeChart(sizeChartLabel, imageName) {
+    const parent = sizeChartLabel.parentElement.parentElement.parentElement;
+    const deleteIcon = parent.querySelector('svg.theme-arco-icon-delete');
+    if (deleteIcon) deleteIcon.dispatchEvent(ClickEvent());
+    const uploadImageContainer = document.querySelector('div[class^="ProductUpload"] span > div');
+    setTimeout(() => {
+        uploadImageContainer.dispatchEvent(MouseOverEvent());
+    }, 200);
+    setTimeout(() => {
+        const mediaIcon = document.querySelector('.theme-arco-popover-inner .theme-arco-icon-file_image');
+        if (mediaIcon) mediaIcon.parentElement.dispatchEvent(ClickEvent());
+        uploadImageContainer.dispatchEvent(MouseOutEvent());
+    }, 500);
+    if (!imageName) {
+        setTimeout(() => {
+            const imageSizeChart = document.querySelector('.theme-arco-modal-wrapper img');
+            imageSizeChart.dispatchEvent(MouseOverEvent());
+            const container = imageSizeChart.parentElement;
+            container.querySelector('label.theme-arco-radio')?.click();
+        }, 2000);
+        setTimeout(() => {
+            document.querySelector('.theme-arco-modal-footer button.theme-arco-btn-primary').click();
+        }, 3000);
+    } else {
+        setTimeout(() => {
+            const images = document.querySelectorAll('.theme-arco-modal-wrapper .grid > div');
+            images.forEach(image => {
+                if (image.textContent.toLowerCase() === imageName.toLowerCase()) {
+                    image.querySelector('img').dispatchEvent(MouseOverEvent());
+                    const container = image.querySelector('img').parentElement;
+                    container.querySelector('label.theme-arco-radio')?.click();
+                }
+            });
+        }, 2000);
+        setTimeout(() => {
+            document.querySelector('.theme-arco-modal-footer button.theme-arco-btn-primary').click();
+        }, 3000);
+    }
+}
+
+/**
+ * Create a button for the Product Name label
+ * @param sizeChartLabel HTMLElement
+ */
+function createSizeChartButton(sizeChartLabel) {
+    if (SIZE_CHART_NAMES.length > 1) {
+        const dropdown = document.createElement('select');
+        dropdown.placeholder = 'Clothing Type';
+        const defaultOption = document.createElement('option');
+        defaultOption.text = 'Clothing Type';
+        defaultOption.value = '';
+        dropdown.add(defaultOption);
+
+        SIZE_CHART_NAMES.forEach(name => {
+            const defaultOption = document.createElement('option');
+            defaultOption.text = name;
+            defaultOption.value = name;
+            dropdown.add(defaultOption);
+        });
+
+        dropdown.addEventListener('change', () => {
+            if (dropdown.value.length > 0) {
+                assistantForSizeChart(sizeChartLabel, dropdown.value);
+            }
+        });
+        const wrapper = document.createElement('div');
+        wrapper.className = 'button-85 button-wrapper';
+        wrapper.appendChild(dropdown);
+        sizeChartLabel.insertAdjacentElement('afterend', wrapper);
+    } else {
+        createPFAssistantButton(sizeChartLabel, () => {
+            assistantForSizeChart(sizeChartLabel);
+        });
+    }
+}
+
 /**
  * Initialize the layout
  */
@@ -267,6 +421,7 @@ function initializeLayout() {
     let productNameLabel = null;
     let attributeLabel = null;
     let descriptionLabel = null;
+    let sizeChartLabel = null;
     paragraphs.forEach(p => {
         if (p.textContent.includes('Product name')) {
             productNameLabel = p;
@@ -274,6 +429,8 @@ function initializeLayout() {
             attributeLabel = p;
         } else if (p.textContent.includes('Description')) {
             descriptionLabel = p;
+        } else if (p.textContent.includes('Size information')) {
+            sizeChartLabel = p;
         }
     });
 
@@ -288,12 +445,55 @@ function initializeLayout() {
     if (descriptionLabel && !descriptionLabel.nextElementSibling) {
         createDescriptionButton(descriptionLabel);
     }
+
+    if (sizeChartLabel && !sizeChartLabel.nextElementSibling) {
+        createSizeChartButton(sizeChartLabel);
+    }
 }
 
+function saveCodesToStore() {
+    chrome.storage.local.set({ HTML_CODES }, () => {
+        console.log('HTML codes saved to store.');
+    });
+}
+
+function loadConfiguration() {
+    chrome.storage.local.get(['ATTRIBUTE'], result => {
+        if (result.ATTRIBUTE) {
+            ATTRIBUTES = JSON.parse(result.ATTRIBUTE);
+        } else {
+            ATTRIBUTES = JSON.parse(DEFAULT_ATTRIBUTE);
+        }
+    });
+    chrome.storage.local.get(['HTML_CODES'], result => {
+        console.log(result.HTML_CODES);
+        if (result.HTML_CODES) {
+            HTML_CODES = result.HTML_CODES;
+        } else if (!result.HTML_CODES || result.HTML_CODES.length === 0) {
+            HTML_CODES.push({ name: 'Default', code: DEFAULT_HTMLCODES });
+            saveCodesToStore();
+        }
+    });
+
+    chrome.storage.local.get(['SIZE_CHART_NAMES'], result => {
+        console.log(result.SIZE_CHART_NAMES);
+        if (result.SIZE_CHART_NAMES) {
+            SIZE_CHART_NAMES = result.SIZE_CHART_NAMES.split('\n')
+                .map(i => i.trim())
+                .filter(i => i.length > 0);
+        } else if (!result.SIZE_CHART_NAMES || result.SIZE_CHART_NAMES.trim().length === 0) {
+            SIZE_CHART_NAMES = [];
+        }
+    });
+}
+
+loadConfiguration();
 chrome.storage.local.get(['token'], result => {
     if (result.token) {
         // Handle the case where the page is already loaded
-        window.addEventListener('DOMContentLoaded', () => initializeLayout);
+        window.addEventListener('DOMContentLoaded', () => {
+            initializeLayout();
+        });
 
         // Handle the case where the page is changed
         const observer = new MutationObserver(mutations => {
